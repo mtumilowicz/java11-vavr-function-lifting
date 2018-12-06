@@ -5,9 +5,11 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -23,14 +25,22 @@ public class FunctionLiftingTest {
                 InactiveUser.builder().id(2).banDate(LocalDate.parse("2016-10-12")).warn(0).build())
                 .map(Function1.lift(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
                 .forEach(option -> option.peek(activeUserRepository::add));
-        
+
         assertTrue(activeUserRepository.existsAll(List.of(2)));
     }
-    
+
     @Test
     public void liftTry() {
-        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build())
+        ActiveUserRepository activeUserRepository = new ActiveUserRepository();
+
+        List<String> fails = new LinkedList<>();
+
+        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build(),
+                InactiveUser.builder().id(2).banDate(LocalDate.parse("2016-10-12")).warn(0).build())
                 .map(Function1.liftTry(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
-                .forEach(System.out::println);
+                .forEach(tryF -> tryF.onSuccess(activeUserRepository::add).onFailure(exception -> fails.add(exception.getMessage())));
+
+        assertTrue(activeUserRepository.existsAll(List.of(2)));
+        assertEquals(1, fails.size());
     }
 }

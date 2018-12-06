@@ -17,10 +17,10 @@ class InactiveUser {
     
     ActiveUser activate(Clock clock) {
         if (warn > 10) {
-            throw new BusinessException("warns has to be <= 10");
+            throw new BusinessException("id = " + id + ": warns has to be <= 10");
         }
         if (ChronoUnit.DAYS.between(banDate, LocalDate.now(clock)) < 14) {
-            throw new BusinessException("minimum ban time is 14 days!");
+            throw new BusinessException("id = " + id + "minimum ban time is 14 days!");
         }
         return ActiveUser.builder().id(id).build();
     }

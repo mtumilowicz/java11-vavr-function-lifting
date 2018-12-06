@@ -9,7 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -19,6 +21,7 @@ public class FunctionLiftingTest {
 
     @Test
     public void lift() {
+//        given
         ActiveUserRepository activeUserRepository = new ActiveUserRepository();
 
         var cannotBeActive = InactiveUser.builder()
@@ -33,28 +36,47 @@ public class FunctionLiftingTest {
                 .warn(0)
                 .build();
 
-        Stream.of(cannotBeActive,
-                canBeActive)
+//        when
+        Stream.of(cannotBeActive, canBeActive)
                 .map(Function1.lift(x -> x.activate(
                         Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault())
                 )))
                 .forEach(option -> option.peek(activeUserRepository::add));
 
+//        then
         assertTrue(activeUserRepository.existsAll(List.of(2)));
     }
 
     @Test
     public void liftTry() {
+//        given
         ActiveUserRepository activeUserRepository = new ActiveUserRepository();
+
+        var cannotBeActive = InactiveUser.builder()
+                .id(1)
+                .banDate(LocalDate.parse("2014-10-12"))
+                .warn(15)
+                .build();
+
+        var canBeActive = InactiveUser.builder()
+                .id(2)
+                .banDate(LocalDate.parse("2016-10-12"))
+                .warn(0)
+                .build();
 
         List<String> fails = new LinkedList<>();
 
-        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build(),
-                InactiveUser.builder().id(2).banDate(LocalDate.parse("2016-10-12")).warn(0).build())
+//        when
+        Stream.of(cannotBeActive, canBeActive)
                 .map(Function1.liftTry(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
                 .forEach(tryF -> tryF.onSuccess(activeUserRepository::add).onFailure(exception -> fails.add(exception.getMessage())));
 
+//        then
+        assertThat(activeUserRepository.count(), is(1));
         assertTrue(activeUserRepository.existsAll(List.of(2)));
-        assertEquals(1, fails.size());
+        
+//        and
+        assertThat(fails, hasSize(1));
+        assertThat(fails.get(0), is("id = 1: warns has to be <= 10"));
     }
 }

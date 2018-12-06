@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/mtumilowicz/java11-vavr-function-lifting.svg?branch=master)](https://travis-ci.com/mtumilowicz/java11-vavr-function-lifting)
+
 # java11-vavr-function-lifting
 Examples of vavr function lifting.
 

@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit;
  */
 @Value
 @Builder
-class InactiveUser {
+class BlockedUser {
     int id;
     int warn;
     LocalDate banDate;

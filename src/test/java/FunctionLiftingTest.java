@@ -24,13 +24,13 @@ public class FunctionLiftingTest {
 //        given
         ActiveUserRepository activeUserRepository = new ActiveUserRepository();
 
-        var cannotBeActive = InactiveUser.builder()
+        var cannotBeActive = BlockedUser.builder()
                 .id(1)
                 .banDate(LocalDate.parse("2014-10-12"))
                 .warn(15)
                 .build();
 
-        var canBeActive = InactiveUser.builder()
+        var canBeActive = BlockedUser.builder()
                 .id(2)
                 .banDate(LocalDate.parse("2016-10-12"))
                 .warn(0)
@@ -52,13 +52,13 @@ public class FunctionLiftingTest {
 //        given
         ActiveUserRepository activeUserRepository = new ActiveUserRepository();
 
-        var cannotBeActive = InactiveUser.builder()
+        var cannotBeActive = BlockedUser.builder()
                 .id(1)
                 .banDate(LocalDate.parse("2014-10-12"))
                 .warn(15)
                 .build();
 
-        var canBeActive = InactiveUser.builder()
+        var canBeActive = BlockedUser.builder()
                 .id(2)
                 .banDate(LocalDate.parse("2016-10-12"))
                 .warn(0)

@@ -80,15 +80,24 @@ to the database
                         .warn(0)
                         .build();
         
+                var now = Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault());
+        
+                List<String> fails = new LinkedList<>();
+        
         //        when
                 Stream.of(cannotBeActive, canBeActive)
-                        .map(Function1.lift(x -> x.activate(
-                                Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault())
-                        )))
-                        .forEach(option -> option.peek(activeUserRepository::add));
+                        .map(Function1.liftTry(x -> x.activate(now)))
+                        .forEach(tryF -> tryF
+                                .onSuccess(activeUserRepository::add)
+                                .onFailure(exception -> fails.add(exception.getMessage())));
         
         //        then
+                assertThat(activeUserRepository.count(), is(1));
                 assertTrue(activeUserRepository.existsAll(List.of(2)));
+        
+        //        and
+                assertThat(fails, hasSize(1));
+                assertThat(fails.get(0), is("id = 1: warns has to be <= 10"));
         ```
 1. we have `Stream` of `BlockedUsers` and 
    we want to activate them (if possible) and save 
@@ -110,11 +119,13 @@ to the database
                    .warn(0)
                    .build();
    
+           var now = Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault());
+   
            List<String> fails = new LinkedList<>();
    
    //        when
            Stream.of(cannotBeActive, canBeActive)
-                   .map(Function1.liftTry(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
+                   .map(Function1.liftTry(x -> x.activate(now)))
                    .forEach(tryF -> tryF
                            .onSuccess(activeUserRepository::add)
                            .onFailure(exception -> fails.add(exception.getMessage())));

@@ -21,7 +21,7 @@ In vavr we have two approaches to lifting:
     
     Function2<Integer, Integer, Option<Integer>> lifted = Function2.lift(divide);
     ```
-* lifting function to Try
+* lifting function to `Try`
     ```
     Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
     

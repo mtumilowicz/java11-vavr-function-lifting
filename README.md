@@ -15,7 +15,7 @@ We lift function `f` to `f′: X -> Y` in such a manner:
 
 # vavr
 In vavr we have two approaches to lifting:
-* lifting function to another function (described above)
+* lifting function to another function
     ```
     Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
     

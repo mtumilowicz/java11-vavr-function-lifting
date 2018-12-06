@@ -7,23 +7,24 @@ _Reference_: https://www.vavr.io/vavr-docs/#_lifting
 A partial function from `X` to `Y` is a function `f: X′ → Y`, 
 for some `X′ c X`.
 
-We lift function `f` to `f′: X -> Y` is such manner:
+We lift function `f` to `f′: X -> Y` in such a manner:
 * `f′ == f` on `X′`
 * `f′(x) = Option.none()` for `x e X\X′`
 
 # vavr
-To lift a function of `x` parameters we use:
-```
-Functionx.lift(...)
-```
-for example to lift 
-```
-Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
-```
-we use
-```
-Function2<Integer, Integer, Option<Integer>> safeDivide = Function2.lift(divide);
-```
+In vavr we have two approaches to lifting:
+* lifting function to another function (described above)
+    ```
+    Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
+    
+    Function2<Integer, Integer, Option<Integer>> lifted = Function2.lift(divide);
+    ```
+* lifting function to Try
+    ```
+    Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
+    
+    Function2<Integer, Integer, Try<Integer>> lifted = Function2.liftTry(divide);
+    ```
 
 # project description
 1. suppose we have:
@@ -61,32 +62,32 @@ we want to activate them (if possible) and save
 to the database
     * `activate` throws exceptions, so we `lift` that 
     function (`FunctionLiftingTest - lift()`):
-    ```
-    //        given
-            ActiveUserRepository activeUserRepository = new ActiveUserRepository();
-    
-            var cannotBeActive = BlockedUser.builder()
-                    .id(1)
-                    .banDate(LocalDate.parse("2014-10-12"))
-                    .warn(15)
-                    .build();
-    
-            var canBeActive = BlockedUser.builder()
-                    .id(2)
-                    .banDate(LocalDate.parse("2016-10-12"))
-                    .warn(0)
-                    .build();
-    
-    //        when
-            Stream.of(cannotBeActive, canBeActive)
-                    .map(Function1.lift(x -> x.activate(
-                            Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault())
-                    )))
-                    .forEach(option -> option.peek(activeUserRepository::add));
-    
-    //        then
-            assertTrue(activeUserRepository.existsAll(List.of(2)));
-    ```
+        ```
+        //        given
+                ActiveUserRepository activeUserRepository = new ActiveUserRepository();
+        
+                var cannotBeActive = BlockedUser.builder()
+                        .id(1)
+                        .banDate(LocalDate.parse("2014-10-12"))
+                        .warn(15)
+                        .build();
+        
+                var canBeActive = BlockedUser.builder()
+                        .id(2)
+                        .banDate(LocalDate.parse("2016-10-12"))
+                        .warn(0)
+                        .build();
+        
+        //        when
+                Stream.of(cannotBeActive, canBeActive)
+                        .map(Function1.lift(x -> x.activate(
+                                Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault())
+                        )))
+                        .forEach(option -> option.peek(activeUserRepository::add));
+        
+        //        then
+                assertTrue(activeUserRepository.existsAll(List.of(2)));
+        ```
 1. we have `Stream` of `BlockedUsers` and 
    we want to activate them (if possible) and save 
    to the database or generate report of exceptions

@@ -21,9 +21,23 @@ public class FunctionLiftingTest {
     public void lift() {
         ActiveUserRepository activeUserRepository = new ActiveUserRepository();
 
-        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build(),
-                InactiveUser.builder().id(2).banDate(LocalDate.parse("2016-10-12")).warn(0).build())
-                .map(Function1.lift(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
+        var cannotBeActive = InactiveUser.builder()
+                .id(1)
+                .banDate(LocalDate.parse("2014-10-12"))
+                .warn(15)
+                .build();
+
+        var canBeActive = InactiveUser.builder()
+                .id(2)
+                .banDate(LocalDate.parse("2016-10-12"))
+                .warn(0)
+                .build();
+
+        Stream.of(cannotBeActive,
+                canBeActive)
+                .map(Function1.lift(x -> x.activate(
+                        Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault())
+                )))
                 .forEach(option -> option.peek(activeUserRepository::add));
 
         assertTrue(activeUserRepository.existsAll(List.of(2)));

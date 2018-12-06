@@ -1,5 +1,5 @@
 # java11-vavr-function-lifting
-Examples of vavr function / `Try` lifting.
+Examples of vavr function lifting.
 
 _Reference_: https://www.vavr.io/vavr-docs/#_lifting
 

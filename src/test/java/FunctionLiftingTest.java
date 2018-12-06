@@ -35,12 +35,12 @@ public class FunctionLiftingTest {
                 .banDate(LocalDate.parse("2016-10-12"))
                 .warn(0)
                 .build();
+        
+        var now = Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault());
 
 //        when
         Stream.of(cannotBeActive, canBeActive)
-                .map(Function1.lift(x -> x.activate(
-                        Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault())
-                )))
+                .map(Function1.lift(x -> x.activate(now)))
                 .forEach(option -> option.peek(activeUserRepository::add));
 
 //        then
@@ -64,11 +64,13 @@ public class FunctionLiftingTest {
                 .warn(0)
                 .build();
 
+        var now = Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault());
+
         List<String> fails = new LinkedList<>();
 
 //        when
         Stream.of(cannotBeActive, canBeActive)
-                .map(Function1.liftTry(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
+                .map(Function1.liftTry(x -> x.activate(now)))
                 .forEach(tryF -> tryF
                         .onSuccess(activeUserRepository::add)
                         .onFailure(exception -> fails.add(exception.getMessage())));

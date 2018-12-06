@@ -18,4 +18,11 @@ public class FunctionLiftingTest {
                 .map(Function1.lift(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
                 .forEach(System.out::println);
     }
+    
+    @Test
+    public void liftTry() {
+        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build())
+                .map(Function1.liftTry(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
+                .forEach(System.out::println);
+    }
 }

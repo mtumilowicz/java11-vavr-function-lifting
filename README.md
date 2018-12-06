@@ -11,6 +11,20 @@ We lift function `f` to `f′: X -> Y` is such manner:
 * `f′ == f` on `X′`
 * `f′(x) = Option.none()` for `x e X\X′`
 
+# vavr
+To lift a function of `x` parameters we use:
+```
+Functionx.lift(...)
+```
+for example to lift 
+```
+Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
+```
+we use
+```
+Function2<Integer, Integer, Option<Integer>> safeDivide = Function2.lift(divide);
+```
+
 # project description
 1. suppose we have:
     * `BlockedUser` with a method to activate it:

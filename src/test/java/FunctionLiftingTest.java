@@ -69,12 +69,14 @@ public class FunctionLiftingTest {
 //        when
         Stream.of(cannotBeActive, canBeActive)
                 .map(Function1.liftTry(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
-                .forEach(tryF -> tryF.onSuccess(activeUserRepository::add).onFailure(exception -> fails.add(exception.getMessage())));
+                .forEach(tryF -> tryF
+                        .onSuccess(activeUserRepository::add)
+                        .onFailure(exception -> fails.add(exception.getMessage())));
 
 //        then
         assertThat(activeUserRepository.count(), is(1));
         assertTrue(activeUserRepository.existsAll(List.of(2)));
-        
+
 //        and
         assertThat(fails, hasSize(1));
         assertThat(fails.get(0), is("id = 1: warns has to be <= 10"));

@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -14,9 +15,14 @@ public class FunctionLiftingTest {
 
     @Test
     public void lift() {
-        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build())
+        ActiveUserRepository activeUserRepository = new ActiveUserRepository();
+
+        Stream.of(InactiveUser.builder().id(1).banDate(LocalDate.parse("2014-10-12")).warn(15).build(),
+                InactiveUser.builder().id(1).banDate(LocalDate.parse("2018-10-12")).warn(0).build())
                 .map(Function1.lift(x -> x.activate(Clock.fixed(Instant.parse("2016-12-03T10:15:30Z"), ZoneId.systemDefault()))))
-                .forEach(System.out::println);
+                .forEach(option -> option.peek(activeUserRepository::add));
+        
+        activeUserRepository.existsAll(List.of(2));
     }
     
     @Test

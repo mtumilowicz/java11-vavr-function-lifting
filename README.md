@@ -7,7 +7,9 @@ _Reference_: https://www.vavr.io/vavr-docs/#_lifting
 
 # preface
 A partial function from `X` to `Y` is a function `f: X′ → Y`, 
-for some `X′ c X`. If the function is called with a disallowed 
+for some `X′ c X`. For `x e X\X′` function is undefined.
+
+In programming, if partial function is called with a disallowed 
 input value, it will typically throw an exception.
 
 In programming - we **lift** function `f` to `f′: X′ -> Option<Y>` in such a manner:

@@ -7,10 +7,11 @@ _Reference_: https://www.vavr.io/vavr-docs/#_lifting
 
 # preface
 A partial function from `X` to `Y` is a function `f: X′ → Y`, 
-for some `X′ c X`.
+for some `X′ c X`. If the function is called with a disallowed 
+input value, it will typically throw an exception.
 
-We lift function `f` to `f′: X -> Y` in such a manner:
-* `f′ == f` on `X′`
+In programming - we **lift** function `f` to `f′: X′ -> Option<Y>` in such a manner:
+* `f′(x).get() = f(x)` on `X′`
 * `f′(x) = Option.none()` for `x e X\X′`
 
 # vavr

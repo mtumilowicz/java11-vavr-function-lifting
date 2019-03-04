@@ -12,7 +12,7 @@ for some `X′ c X`. For `x e X\X′` function is undefined.
 In programming, if partial function is called with a disallowed 
 input value, it will typically throw an exception.
 
-In programming - we **lift** function `f` to `f′: X′ -> Option<Y>` in such a manner:
+In programming - we **lift** function `f` to `f′: X -> Option<Y>` in such a manner:
 * `f′(x).get() = f(x)` on `X′`
 * `f′(x) = Option.none()` for `x e X\X′`
 

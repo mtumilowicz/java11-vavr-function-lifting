@@ -18,13 +18,13 @@ In programming - we **lift** function `f` to `f′: X -> Option<Y>` in such a ma
 
 # vavr
 In vavr we have two approaches to lifting:
-* lifting function to another function
+* lifting function with `Option`
     ```
     Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
     
     Function2<Integer, Integer, Option<Integer>> lifted = Function2.lift(divide);
     ```
-* lifting function to `Try`
+* lifting function with `Try`
     ```
     Function2<Integer, Integer, Integer> divide = (a, b) -> a / b;
     
